@@ -34,6 +34,7 @@ const CreatePost = () => {
     <div className={styles.createPost}>
       <textarea
         className={styles.addPost}
+        placeholder="Write Post..."
         value={post}
         onChange={(e) => setPost(e.target.value)}
       />

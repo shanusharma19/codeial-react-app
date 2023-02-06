@@ -57,6 +57,7 @@ const Navbar = () => {
                 <li
                   className={styles.searchResultsRow}
                   key={`user-${user._id}`}
+                  onClick={(e) => setSearchText('')}
                 >
                   <Link to={`/user/${user._id}`}>
                     <img

@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { useToasts } from 'react-toast-notifications';
 
 import styles from '../styles/login.module.css';
-import { login } from '../api';
+import { useAuth } from '../hooks';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
   const { addToast } = useToasts();
+  const auth = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ const Login = () => {
       });
     }
 
-    const response = await login(email, password);
+    const response = await auth.login(email, password);
 
     if (response.success) {
       addToast('Successfully logged in', {
@@ -34,6 +36,10 @@ const Login = () => {
 
     setLoggingIn(false);
   };
+
+  if (auth.user) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <form className={styles.loginForm} onSubmit={handleSubmit}>

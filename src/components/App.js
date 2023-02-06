@@ -1,41 +1,40 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
 
-import { getPosts } from '../api';
-import { Home, Login } from '../pages';
+import { useAuth } from '../hooks';
+import { Home, Login, Signup, Settings, UserProfile } from '../pages';
 import { Loader, Navbar } from './';
 
-const About = () => {
-  return <h1>About</h1>;
-};
+function PrivateRoute({ children, ...rest }) {
+  const auth = useAuth();
 
-const UserInfo = () => {
-  return <h1>User</h1>;
-};
+  return (
+    <Route
+      {...rest}
+      render={() => {
+        if (auth.user) {
+          return children;
+        }
+
+        return <Redirect to="/login" />;
+      }}
+    />
+  );
+}
 
 const Page404 = () => {
   return <h1>404</h1>;
 };
 
 function App() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const auth = useAuth();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await getPosts();
-
-      if (response.success) {
-        setPosts(response.data.posts);
-      }
-
-      setLoading(false);
-    };
-
-    fetchPosts();
-  }, []);
-
-  if (loading) {
+  console.log('auth', auth);
+  if (auth.loading) {
     return <Loader />;
   }
 
@@ -45,20 +44,24 @@ function App() {
         <Navbar />
         <Switch>
           <Route exact path="/">
-            <Home posts={posts} />
+            <Home />
           </Route>
 
           <Route exact path="/login">
             <Login />
           </Route>
 
-          <Route exact path="/about">
-            <About />
+          <Route exact path="/register">
+            <Signup />
           </Route>
 
-          <Route exact path="/user/asdasd">
-            <UserInfo />
-          </Route>
+          <PrivateRoute exact path="/settings">
+            <Settings />
+          </PrivateRoute>
+
+          <PrivateRoute exact path="/user/:userId">
+            <UserProfile />
+          </PrivateRoute>
 
           <Route>
             <Page404 />
